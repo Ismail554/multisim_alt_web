@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CircuitBench — circuit simulator</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header id="bar">
+  <div class="brand">CircuitBench</div>
+  <div class="grp">
+    <button id="run" class="primary" title="Run / pause (Space)">Pause</button>
+    <button id="reset" title="Restart the simulation from t = 0">Reset</button>
+  </div>
+  <div class="grp">
+    <label title="Simulation time step, e.g. 10u, 1m">Step <input id="dt" size="6" spellcheck="false"></label>
+    <label title="Simulation speed">Speed <input id="speed" type="range" min="0" max="100" value="50"></label>
+  </div>
+  <div class="grp">
+    <button id="new">New</button>
+    <button id="open">Open</button>
+    <button id="save">Save</button>
+    <select id="examples" title="Load an example circuit"><option value="">Examples…</option></select>
+  </div>
+  <div class="grp">
+    <button id="wire" title="Wire tool (W)">Wire</button>
+    <button id="rot" title="Rotate (R)">Rotate</button>
+    <button id="del" title="Delete (Del)">Delete</button>
+    <button id="undo" title="Undo (Ctrl+Z)">Undo</button>
+    <button id="redo" title="Redo (Ctrl+Y)">Redo</button>
+  </div>
+  <div class="grp">
+    <button id="zout" title="Zoom out">−</button>
+    <button id="zfit" title="Fit circuit to view">Fit</button>
+    <button id="zin" title="Zoom in">+</button>
+  </div>
+  <div class="grp right">
+    <button id="ic">Custom IC…</button>
+    <button id="help">Help</button>
+  </div>
+</header>
+<main>
+  <aside id="palette">
+    <input id="search" type="search" placeholder="Search parts…" autocomplete="off">
+    <div id="parts"></div>
+  </aside>
+  <section id="stage">
+    <div id="canvasWrap"><canvas id="cv"></canvas></div>
+    <div id="status"><span id="hint"></span><span id="simtime"></span></div>
+    <div id="scopeWrap">
+      <div id="scopeBar">
+        <strong>Scope</strong>
+        <label>Time window <select id="swin"></select></label>
+        <label>View <select id="smode"><option value="overlay">Overlay</option><option value="stacked">Stacked (logic analyser)</option></select></label>
+        <label><input id="strig" type="checkbox"> Trigger</label>
+        <span class="sp"></span>
+        <button id="shide">Hide</button>
+      </div>
+      <canvas id="scope"></canvas>
+    </div>
+  </section>
+  <aside id="props"></aside>
+</main>
+
+<dialog id="icDlg">
+  <h2>Custom IC</h2>
+  <p>Define your own logic chip with boolean expressions. Operators: <code>!</code> NOT, <code>&amp;</code> AND, <code>|</code> OR, <code>^</code> XOR, and parentheses.</p>
+  <label>Chip name <input id="icName" maxlength="16" placeholder="e.g. FULLADD" spellcheck="false"></label>
+  <label>Input pins (comma separated) <input id="icIn" placeholder="A, B, Cin" spellcheck="false"></label>
+  <label>Outputs — one per line, <code>NAME = expression</code>
+    <textarea id="icOut" rows="4" spellcheck="false" placeholder="S = A ^ B ^ Cin&#10;Cout = (A &amp; B) | (Cin &amp; (A ^ B))"></textarea></label>
+  <div id="icErr" role="alert"></div>
+  <div class="row">
+    <button id="icImport">Import file…</button>
+    <button id="icExport">Export library</button>
+    <span class="sp"></span>
+    <button id="icClose">Close</button>
+    <button id="icAdd" class="primary">Add chip</button>
+  </div>
+  <div id="icList"></div>
+</dialog>
+
+<dialog id="helpDlg">
+  <h2>How to use CircuitBench</h2>
+  <ul>
+    <li><b>Place a part:</b> click it in the left panel, then click on the canvas. Press <kbd>R</kbd> to rotate, <kbd>Esc</kbd> to cancel.</li>
+    <li><b>Wire:</b> drag from any pin or wire end. To start a wire from the middle of another wire, press <kbd>W</kbd> first. Crossing wires only connect where a dot is shown.</li>
+    <li><b>Edit values:</b> select a part and change it in the right panel. Values accept suffixes: <code>4.7k</code>, <code>10u</code>, <code>100n</code>, <code>2M</code>.</li>
+    <li><b>Switches and logic inputs:</b> click to toggle.</li>
+    <li><b>Measure:</b> put a Scope probe on a wire to plot it; use the Voltmeter across parts and the Ammeter in series. Select a part to see its live voltage and current.</li>
+    <li><b>Ground:</b> analog circuits need a Ground symbol as the 0 V reference.</li>
+    <li><b>ICs:</b> VCC and GND pins on 74xx chips do not need to be connected. Unconnected control inputs sit at their inactive level.</li>
+    <li><b>View:</b> scroll to pan, <kbd>Ctrl</kbd>+scroll (or pinch) to zoom, right-drag to pan.</li>
+    <li><b>Shortcuts:</b> <kbd>Space</kbd> run/pause, <kbd>Del</kbd> delete, <kbd>Ctrl+Z</kbd>/<kbd>Ctrl+Y</kbd> undo/redo, <kbd>Ctrl+C</kbd>/<kbd>Ctrl+V</kbd> copy/paste.</li>
+  </ul>
+  <div class="row"><span class="sp"></span><button id="helpClose" class="primary">Close</button></div>
+</dialog>
+<input id="file" type="file" accept=".json,application/json" hidden>
+
+<script src="js/engine.js"></script>
+<script src="js/circuit.js"></script>
+<script src="js/elements.js"></script>
+<script src="js/digital.js"></script>
+<script src="js/examples.js"></script>
+<script src="js/scope.js"></script>
+<script src="js/editor.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
